@@ -19,15 +19,15 @@ app.use(express.static(publicPath));
 io.on('connection', (socket) => {          //io.on lets you register an event listener
     console.log('new user connected');      //socket is the individual user from index.html, not all users on server
 
-    socket.emit('newMessage', {
-      from: 'Jacksoen',
-      text: 'Hey whats up',
-      createdAt: 123
-    });
+
 
     socket.on('createMessage', (newMessage) => {
       console.log('create Message',{from: newMessage.from, text: newMessage.text, createdAt: Date.now()});
-      socket.emit('newMessage',  {from: newMessage.from, text: newMessage.text, createdAt: Date.now()});
+      io.emit('newMessage',  {           //Important: socket.emit for single connection, io.emit for all connections
+        from: newMessage.from,
+        text: newMessage.text,
+        createdAt: new Date().getTime()
+      });
     });
 
 
