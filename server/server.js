@@ -4,6 +4,7 @@ const express = require('express');
 const fs = require('fs'); //file system
 const socketIO = require('socket.io');
 
+const {generateMessage} = require('./utils/message');
 const publicPath = path.join(__dirname,'../public');
 const port = process.env.PORT || 3000;
 
@@ -20,25 +21,14 @@ io.on('connection', (socket) => {          //io.on lets you register an event li
     console.log('new user connected');      //socket is the individual user from index.html, not all users on server
 
 
-    socket.emit('newMessage', {
-            from: 'Admin',
-            text: 'Welcome to the chat app',
-            createdAt: new Date().getTime()
-          });
+    socket.emit('newMessage', generateMessage('Admin','Welcome to the chat app'));
 
-    socket.broadcast.emit('newMessage',{
-            from: 'Admin',
-            text: 'New User Joined',
-            createdAt: new Date().getTime()
-          });
+    socket.broadcast.emit('newMessage',generateMessage('Admin','New User Joined'));
 
     socket.on('createMessage', (newMessage) => {
       console.log('create Message',{from: newMessage.from, text: newMessage.text, createdAt: Date.now()});
-      io.emit('newMessage',  {           //Important: socket.emit for single connection, io.emit for all connections
-        from: newMessage.from,
-        text: newMessage.text,
-        createdAt: new Date().getTime()
-      });
+      io.emit('newMessage',             //Important: socket.emit for single connection, io.emit for all connections
+        generateMessage(newMessage.from, newMessage.text));
 
       // socket.broadcast.emit('newMessage', {
       //   from: newMessage.from,
