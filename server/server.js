@@ -25,10 +25,14 @@ io.on('connection', (socket) => {          //io.on lets you register an event li
 
     socket.broadcast.emit('newMessage',generateMessage('Admin','New User Joined'));
 
-    socket.on('createMessage', (newMessage) => {
+    socket.on('createMessage', (newMessage, callback) => {
       console.log('create Message',{from: newMessage.from, text: newMessage.text, createdAt: Date.now()});
       io.emit('newMessage',             //Important: socket.emit for single connection, io.emit for all connections
         generateMessage(newMessage.from, newMessage.text));
+        callback({
+          textBack: 'This is from the server',
+          who: 'UB'
+        });
 
       // socket.broadcast.emit('newMessage', {
       //   from: newMessage.from,
